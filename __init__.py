@@ -4,18 +4,15 @@ from mysql.connector import errorcode
 
 class MovingHistory:
 
-
-    def __init__(self, db_host, db_user, db_password, db_database):
+    def __init__(self, db_database, db_host="localhost"):
         self.db_host     = db_host
-        self.db_user     = db_user
-        self.db_password = db_password
         self.db_database = db_database
 
     def get_history_records(self):
         select_history_records = """
         SELECT * FROM history
-        WHERE date_created = '%s'"""
-        date_created = ""
+        WHERE date_created like '%s'"""
+        date_created = "2016-06-01 03:57:17"
 
         try:
             cnx = mysql.connector.connect(host="localhost",
@@ -34,10 +31,6 @@ class MovingHistory:
             cnx.close()
             return history_records
 
-
-        with mysql.connector.connect(host="localhost", database="bfc_crm_backup") as conn:
-            with conn.cursor() as cursor:
-                cursor.execute(select_history_records, date_created)
 #
 #mydb2 = mysql.connector.connect(
 #    host = "localhost",

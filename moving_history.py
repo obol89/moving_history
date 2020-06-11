@@ -6,7 +6,7 @@ import argparse
 select_history_records = """
 SELECT * FROM history
 WHERE date_created < now() - interval 365 DAY
-ORDER BY date_created ASC LIMIT 1"""
+ORDER BY date_created ASC LIMIT 100"""
 
 insert_history_records = """
 INSERT INTO history (history_id, person_id, tablename, record_id, related_tablename, related_record_id, columnname, value_from, value_to, action_type, date_created, changes)
@@ -89,12 +89,13 @@ def delete_records(database1, database2, host_database1, host_database2, user_da
         mycursor4 = cnx4.cursor()
         mycursor4.execute(compare_history_records, history_records_3_1[0], multi=True)
         history_records4 = mycursor4.fetchall()
-        history_records_4_1 = [lis[:2] for lis in history_records4]
         cnx4.close()
+        history_records_4_1 = [lis[:2] for lis in history_records4]
 
-    # Deleting records from first DB
-    try:
-        if history_records_4_1[0] == history_records_3_1[0]:
+    counter = 0
+    for i in history_records_4_1:
+        counter += 1
+        if history_records_3_1 in i[0]:
             try:
                 cnx5 = mysql.connector.connect(database=database1, user=user_database1, host=host_database1)
             except mysql.connector.Error as err:
@@ -111,10 +112,46 @@ def delete_records(database1, database2, host_database1, host_database2, user_da
                 cnx5.close()
                 return "{} have been deleted".format(history_records_3_1)
         else:
-            return "Sorry record wasn't found in the first DB"
-    except IndexError:
-        print("record doesn't exist in first DB")
-        return
+            print("Record wasn't found")
+            continue
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # Deleting records from first DB
+    # try:
+    #     if history_records_4_1[0] == history_records_3_1[0]:
+    #         try:
+    #             cnx5 = mysql.connector.connect(database=database1, user=user_database1, host=host_database1)
+    #         except mysql.connector.Error as err:
+    #             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+    #                 print("Something is wrong with your username or password")
+    #             elif err.errno == errorcode.ER_BAD_DB_ERROR:
+    #                 print("Database does not exist")
+    #             else:
+    #                 print(err)
+    #         else:
+    #             mycursor5 = cnx5.cursor()
+    #             mycursor5.execute(delete_history_records, history_records_3_1[0], multi=True)
+    #             cnx5.commit()
+    #             cnx5.close()
+    #             return "{} have been deleted".format(history_records_3_1)
+    #     else:
+    #         return "Sorry record wasn't found in the first DB"
+    # except IndexError:
+    #     print("record doesn't exist in first DB")
+    #     return
 
 
 parser = argparse.ArgumentParser(description="Provide database details")

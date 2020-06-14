@@ -6,7 +6,7 @@ import argparse
 select_history_records = """
 SELECT * FROM history
 WHERE date_created < now() - interval 365 DAY
-ORDER BY date_created ASC LIMIT 100"""
+ORDER BY date_created ASC LIMIT 1000"""
 
 insert_history_records = """
 INSERT INTO history (history_id, person_id, tablename, record_id, related_tablename, related_record_id, columnname, value_from, value_to, action_type, date_created, changes)
@@ -88,7 +88,7 @@ def delete_records(database1, user_database1, host_database1, database2, user_da
         if i in history_rec_id_1:
             records_to_delete.append(i)
         else:
-            print("Record doesn't exist in second DB, we cannot remove it")
+            continue
 
     try:
         cnx5 = mysql.connector.connect(database=database1, user=user_database1, host=host_database1)
@@ -104,7 +104,7 @@ def delete_records(database1, user_database1, host_database1, database2, user_da
         mycursor5.executemany(delete_history_records, history_rec_id_1)
         cnx5.commit()
         cnx5.close()
-        print("{} have been deleted".format(history_records_1))
+        print(mycursor5.rowcount, "records deleted")
 
 
 parser = argparse.ArgumentParser(description="Provide database details")

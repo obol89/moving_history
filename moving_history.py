@@ -17,9 +17,9 @@ DELETE FROM history
 WHERE history_id = %s and person_id = %s"""
 
 
-def insert_records(database1, user_database1, host_database1, database2, user_database2, host_database2):
+def insert_records(database1, user_database1, host_database1, password_database1, database2, user_database2, host_database2, password_database2):
     try:
-        cnx = mysql.connector.connect(database=database1, user=user_database1, host=host_database1)
+        cnx = mysql.connector.connect(database=database1, user=user_database1, host=host_database1, password=password_database1)
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             print("Something is wrong with your username or password")
@@ -34,7 +34,7 @@ def insert_records(database1, user_database1, host_database1, database2, user_da
         cnx.close()
 
     try:
-        cnx2 = mysql.connector.connect(database=database2, user=user_database2, host=host_database2)
+        cnx2 = mysql.connector.connect(database=database2, user=user_database2, host=host_database2, password=password_database2)
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             print("Something is wrong with your username or password")
@@ -49,9 +49,9 @@ def insert_records(database1, user_database1, host_database1, database2, user_da
         cnx2.close()
 
 
-def delete_records(database1, user_database1, host_database1, database2, user_database2, host_database2):
+def delete_records(database1, user_database1, host_database1, password_database1, database2, user_database2, host_database2, password_database2):
     try:
-        cnx = mysql.connector.connect(database=database1, user=user_database1, host=host_database1)
+        cnx = mysql.connector.connect(database=database1, user=user_database1, host=host_database1, password=password_database1)
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             print("Something is wrong with your username or password")
@@ -66,7 +66,7 @@ def delete_records(database1, user_database1, host_database1, database2, user_da
         cnx.close()
 
     try:
-        cnx2 = mysql.connector.connect(database=database2, user=user_database2, host=host_database2)
+        cnx2 = mysql.connector.connect(database=database2, user=user_database2, host=host_database2, password=password_database2)
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             print("Something is wrong with your username or password")
@@ -91,7 +91,7 @@ def delete_records(database1, user_database1, host_database1, database2, user_da
             continue
 
     try:
-        cnx5 = mysql.connector.connect(database=database1, user=user_database1, host=host_database1)
+        cnx5 = mysql.connector.connect(database=database1, user=user_database1, host=host_database1, password=password_database1)
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             print("Something is wrong with your username or password")
@@ -114,12 +114,16 @@ parser.add_argument("--user_db1", dest="user_database1", type=str,
                     help="Please provide name of user to first db", required=True)
 parser.add_argument("--host_db1", dest="host_database1", type=str,
                     help="Please provide hostname or address of first db", required=True)
+parser.add_argument("--pass_db1", dest="password_database1", type=str,
+                    help="Please provide password to db", required=False)
 parser.add_argument("--db2", dest="database2", type=str,
                     help="Please provide name of second db", required=True)
 parser.add_argument("--user_db2", dest="user_database2", type=str,
                     help="Please provide name of user to second db", required=True)
 parser.add_argument("--host_db2", dest="host_database2", type=str,
                     help="Please provide hostname or address of second db", required=True)
+parser.add_argument("--pass_db2", dest="password_database2", type=str,
+                    help="Please provide password to db", required=False)
 
 args = parser.parse_args()
 database1 = args.database1
@@ -128,7 +132,9 @@ host_database1 = args.host_database1
 host_database2 = args.host_database2
 user_database1 = args.user_database1
 user_database2 = args.user_database2
+password_database1 = args.password_database1
+password_database2 = args.password_database2
 
 if __name__ == '__main__':
-    insert_records(database1, user_database1, host_database1, database2, user_database2, host_database2)
-    delete_records(database1, user_database1, host_database1, database2, user_database2, host_database2)
+    insert_records(database1, user_database1, host_database1, password_database1, database2, user_database2, host_database2, password_database2)
+    delete_records(database1, user_database1, host_database1, password_database1, database2, user_database2, host_database2, password_database2)

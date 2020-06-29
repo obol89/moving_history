@@ -3,14 +3,15 @@
 Script moves 1000 records with every run. It takes records oldest than 365 days.
 
 The script takes the following parameters:
---db1
---user_db1
---host_db1
---pass_db1
---db2
---user_db2
---host_db2
---pass_db2
+
+- --db1
+- --user_db1
+- --host_db1
+- --pass_db1
+- --db2
+- --user_db2
+- --host_db2
+- --pass_db2
 
 If the user doesn't need password we have to proide an empty password that looks like that:
 --pass_db1=""

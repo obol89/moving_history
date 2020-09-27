@@ -1,6 +1,8 @@
 import mysql.connector
 from mysql.connector import errorcode
 import argparse
+import os
+import sys
 
 
 select_history_records = """
@@ -18,6 +20,13 @@ WHERE history_id = %s and person_id = %s"""
 
 
 def insert_records(database1, user_database1, host_database1, password_database1, database2, user_database2, host_database2, password_database2):
+    pid = str(os.getpid())
+    pidfile = "/tmp/moving_history.pid"
+
+    if os.path.isfile(pidfile):
+        print("{} already exists, exiting".format(pidfile))
+        sys.exit()
+    file(pidfile, 'w').write(pid)
     try:
         cnx = mysql.connector.connect(database=database1, user=user_database1, host=host_database1, password=password_database1)
     except mysql.connector.Error as err:
@@ -32,6 +41,8 @@ def insert_records(database1, user_database1, host_database1, password_database1
         mycursor.execute(select_history_records, multi=True)
         history_records_1 = mycursor.fetchall()
         cnx.close()
+    finally:
+        os.unlink(pidfile)
 
     try:
         cnx2 = mysql.connector.connect(database=database2, user=user_database2, host=host_database2, password=password_database2)

@@ -18,15 +18,18 @@ delete_history_records = """
 DELETE FROM history
 WHERE history_id = %s and person_id = %s"""
 
+pidfile = "/tmp/moving_history.pid"
 
 def insert_records(database1, user_database1, host_database1, password_database1, database2, user_database2, host_database2, password_database2):
     pid = str(os.getpid())
-    pidfile = "/tmp/moving_history.pid"
+    # pidfile = "/tmp/moving_history.pid"
 
     if os.path.isfile(pidfile):
         print("{} already exists, exiting".format(pidfile))
         sys.exit()
-    file(pidfile, 'w').write(pid)
+    with open(pidfile, 'w') as file:
+        print("Creating pid file")
+        file.write(pid)
     try:
         cnx = mysql.connector.connect(database=database1, user=user_database1, host=host_database1, password=password_database1)
     except mysql.connector.Error as err:
@@ -41,8 +44,8 @@ def insert_records(database1, user_database1, host_database1, password_database1
         mycursor.execute(select_history_records, multi=True)
         history_records_1 = mycursor.fetchall()
         cnx.close()
-    finally:
-        os.unlink(pidfile)
+    # finally:
+        # os.unlink(pidfile)
 
     try:
         cnx2 = mysql.connector.connect(database=database2, user=user_database2, host=host_database2, password=password_database2)
@@ -116,6 +119,7 @@ def delete_records(database1, user_database1, host_database1, password_database1
         cnx5.commit()
         cnx5.close()
         print(mycursor5.rowcount, "records deleted")
+    os.unlink(pidfile)
 
 
 parser = argparse.ArgumentParser(description="Provide database details")
